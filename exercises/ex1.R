@@ -20,7 +20,8 @@ shinyApp(
       d %>%
         filter(city %in% input$city) %>%
         ggplot(aes(x=time, y=temperature, color=city)) +
-        geom_line()
+        geom_line() + 
+        theme(legend.position = "none")
     })
   }
 )
