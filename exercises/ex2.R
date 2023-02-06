@@ -7,9 +7,10 @@ shinyApp(
     titlePanel("Temperature Forecasts"),
     sidebarLayout(
       sidebarPanel(
-        radioButtons(
+        selectInput(
           "city", "Select a city",
-          choices = c("Washington", "New York", "Los Angeles", "Chicago")
+          choices = c("Washington", "New York", "Los Angeles", "Chicago"),
+          multiple = TRUE
         ) 
       ),
       mainPanel( plotOutput("plot") )
