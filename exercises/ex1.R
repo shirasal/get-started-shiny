@@ -9,7 +9,7 @@ shinyApp(
       sidebarPanel(
         radioButtons(
           "city", "Select a city",
-          choices = c("Washington", "New York", "Los Angeles")
+          choices = d %>% distinct(city) %>% pull()
         ) 
       ),
       mainPanel( plotOutput("plot") )
