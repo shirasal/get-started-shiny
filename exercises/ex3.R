@@ -13,7 +13,8 @@ shinyApp(
         ),
         checkboxInput("forecast", "Highlight forecasted data", value = FALSE)
       ),
-      mainPanel( plotOutput("plot") )
+      mainPanel( plotOutput("plot"),
+                 tableOutput("temp_table"))
     )
   ),
   server = function(input, output, session) {
@@ -25,17 +26,27 @@ shinyApp(
       
       if (input$forecast) {
         g = g + geom_rect(inherit.aes = FALSE,
-          data = d %>%
-            filter(forecast) %>%
-            group_by(forecast) %>%
-            summarize(xmin = min(time)),
-          aes(xmin=xmin),
-          ymin = -Inf, ymax = Inf, xmax=Inf,
-          alpha = 0.25, color = NA, fill = "yellow"
+                          data = d %>%
+                            filter(forecast) %>%
+                            group_by(forecast) %>%
+                            summarize(xmin = min(time)),
+                          aes(xmin=xmin),
+                          ymin = -Inf, ymax = Inf, xmax=Inf,
+                          alpha = 0.25, color = NA, fill = "yellow"
         )
       }
-      
       g
     })
+    output$temp_table = renderTable({
+      d %>% 
+        group_by(city, date = lubridate::date(time)) %>% 
+        summarise(min_temp = min(temperature),
+                  max_temp = max(temperature)) %>% 
+        mutate(weekday = lubridate::wday(date)) %>% 
+        filter(weekday < 6,
+               city %in% input$city) %>% 
+        select("Day" = weekday, "Min Temperature" = min_temp, "Max Temperature" = max_temp)
+    }
+    )
   }
 )
